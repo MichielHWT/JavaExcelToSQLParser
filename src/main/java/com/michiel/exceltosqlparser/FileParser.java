@@ -48,7 +48,8 @@ public class FileParser {
                 ++IDCounter;
                 continue;
             }
-            SQLStringValues.append("\t(").append(IDCounter).append(", ");
+            SQLStringValues.append("\t(");
+            //SQLStringValues.append(IDCounter).append(", "); //Add ID to Values
             for (int columnNumber : columnNumbers) {
                 Cell cell = row.getCell(columnNumber);
                 try{
@@ -56,10 +57,10 @@ public class FileParser {
                     SQLStringValues.append(cellValue);
                 }catch(Exception e){
                     try{
-                        cellString = cell.getStringCellValue();
+                        cellString = "\"" + cell.getStringCellValue() + "\""; //String in literal quotationmarks
                         cellString = removeForbiddenCharacters(cellString);
                     }catch(Exception ex){
-                        cellString = " "; //If the cell has no value give empty String as value
+                        cellString = "\"\""; //If the cell has no value give empty String as value
                     }
                     finally {
                         System.out.println(cellString);
@@ -74,8 +75,10 @@ public class FileParser {
             SQLStringValues.append("), \n");
             ++IDCounter;
         }
-        SQLStringValues.deleteCharAt(SQLStringValues.length() - 1).deleteCharAt(SQLStringValues.length() - 1).deleteCharAt(SQLStringValues.length() - 1);
-        SQLString = "INSERT INTO Ingredients (ID, Naam, Name, Naam2, Meeteenheid, Hoeveelheid, Energie_kJ, Energie_kcal, Eiwit_g)\n" + SQLStringValues.toString();
+        SQLStringValues.deleteCharAt(SQLStringValues.length() - 1).deleteCharAt(SQLStringValues.length() - 1).deleteCharAt(SQLStringValues.length() - 1); //Remove ", \n"
+        //String SQLStringFirstLine = "INSERT INTO Ingredients (id, naam, name, naam2, measure_unit, amount, energy_kj, energy_kcal, protein_g)\n";
+        String SQLStringFirstLine = "INSERT INTO Ingredients (Naam, Name, Naam2, Meeteenheid, Hoeveelheid, Energie_kJ, Energie_kcal, Eiwit_g)\n";
+        SQLString = SQLStringFirstLine + SQLStringValues.toString() + ";";
     }
 
     public String removeForbiddenCharacters(String cellString){
